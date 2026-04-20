@@ -2,15 +2,14 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Red Green Light Trainer</title>
+  <title>Red Green Light</title>
 
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
       background: black;
       color: white;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -21,20 +20,6 @@
       position: absolute;
       top: 20px;
       left: 20px;
-      z-index: 2;
-    }
-
-    input {
-      width: 60px;
-      padding: 5px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 8px 12px;
-      font-size: 16px;
-      margin-left: 5px;
-      cursor: pointer;
     }
 
     #text {
@@ -47,9 +32,8 @@
 <body>
 
 <div id="controls">
-  Reps: <input id="reps" type="number" value="5" min="1" />
+  Reps: <input id="reps" type="number" value="5" min="1">
   <button onclick="start()">Start</button>
-  <button onclick="toggleFullscreen()">Fullscreen</button>
 </div>
 
 <div id="text">▶</div>
@@ -79,10 +63,11 @@
 
     const isGreen = Math.random() > 0.5;
 
-    document.body.style.background = isGreen ? "green" : "red";
+    // 🔥 THIS is the key line
+    document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
     text.textContent = "";
 
-    await sleep(1500 + Math.random() * 2000);
+    await sleep(2000);
 
     document.body.style.background = "black";
     await sleep(800);
@@ -100,14 +85,6 @@
 
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
   }
 </script>
 
