@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Red Green Light Trainer</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      overflow: hidden;
+    }
+
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    input {
+      width: 60px;
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    #stage {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #circle {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: gray;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="controls">
+  Reps: <input id="reps" type="number" value="5" min="1" />
+  <button onclick="start()">Start</button>
+  <button onclick="toggleFullscreen()">Fullscreen</button>
+</div>
+
+<div id="stage">
+  <div id="circle">▶</div>
+</div>
+
+<script>
+  const circle = document.getElementById("circle");
+
+  let totalReps = 5;
+  let currentRep = 0;
+
+  async function start() {
+    totalReps = parseInt(document.getElementById("reps").value) || 5;
+    currentRep = 0;
+
+    runRound();
+  }
+
+  async function runRound() {
+    if (currentRep >= totalReps) {
+      circle.style.background = "gray";
+      circle.textContent = "✔";
+      return;
+    }
+
+    currentRep++;
+
+    await countdown(3);
+
+    const isGreen = Math.random() > 0.5;
+    circle.style.background = isGreen ? "green" : "red";
+    circle.textContent = "";
+
+    await sleep(1500 + Math.random() * 2000);
+
+    circle.style.background = "black";
+    await sleep(800);
+
+    runRound();
+  }
+
+  async function countdown(n) {
+    for (let i = n; i > 0; i--) {
+      circle.style.background = "gray";
+      circle.textContent = i;
+      await sleep(1000);
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+</script>
+
+</body>
+</html>
