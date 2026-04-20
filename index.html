@@ -11,6 +11,10 @@
       background: black;
       color: white;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
     #controls {
@@ -33,23 +37,8 @@
       cursor: pointer;
     }
 
-    #stage {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #circle {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: gray;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
+    #text {
+      font-size: 120px;
       font-weight: bold;
     }
   </style>
@@ -63,12 +52,10 @@
   <button onclick="toggleFullscreen()">Fullscreen</button>
 </div>
 
-<div id="stage">
-  <div id="circle">▶</div>
-</div>
+<div id="text">▶</div>
 
 <script>
-  const circle = document.getElementById("circle");
+  const text = document.getElementById("text");
 
   let totalReps = 5;
   let currentRep = 0;
@@ -76,14 +63,13 @@
   async function start() {
     totalReps = parseInt(document.getElementById("reps").value) || 5;
     currentRep = 0;
-
     runRound();
   }
 
   async function runRound() {
     if (currentRep >= totalReps) {
-      circle.style.background = "gray";
-      circle.textContent = "✔";
+      document.body.style.background = "black";
+      text.textContent = "✔";
       return;
     }
 
@@ -92,12 +78,13 @@
     await countdown(3);
 
     const isGreen = Math.random() > 0.5;
-    circle.style.background = isGreen ? "green" : "red";
-    circle.textContent = "";
+
+    document.body.style.background = isGreen ? "green" : "red";
+    text.textContent = "";
 
     await sleep(1500 + Math.random() * 2000);
 
-    circle.style.background = "black";
+    document.body.style.background = "black";
     await sleep(800);
 
     runRound();
@@ -105,8 +92,8 @@
 
   async function countdown(n) {
     for (let i = n; i > 0; i--) {
-      circle.style.background = "gray";
-      circle.textContent = i;
+      document.body.style.background = "black";
+      text.textContent = i;
       await sleep(1000);
     }
   }
