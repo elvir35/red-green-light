@@ -27,6 +27,19 @@
       font-weight: bold;
       text-shadow: 0 0 30px rgba(255,255,255,0.9);
     }
+
+    button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    input {
+      width: 60px;
+      padding: 6px;
+      font-size: 16px;
+    }
   </style>
 </head>
 
@@ -35,6 +48,7 @@
 <div id="controls">
   Reps: <input id="reps" type="number" value="5" min="1">
   <button onclick="start()">Start</button>
+  <button onclick="toggleFullscreen()">Fullscreen</button>
 </div>
 
 <div id="number">▶</div>
@@ -67,9 +81,7 @@
 
     const isGreen = Math.random() > 0.5;
 
-    // 🔥 THIS is the key: full screen color
     document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
-
     number.textContent = "";
 
     await sleep(2000);
@@ -91,6 +103,14 @@
 
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
   }
 </script>
 
