@@ -65,33 +65,38 @@
     runRound();
   }
 
-  async function runRound() {
+  aasync function runRound() {
 
-    if (currentRep >= totalReps) {
-      document.body.style.background = "black";
-      number.textContent = "✔";
-      return;
-    }
-
-    currentRep++;
-
-    await countdown(3);
-
-    await sleep(500 + Math.random() * 1500);
-
-    const isGreen = Math.random() > 0.5;
-
-    document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
-    number.textContent = "";
-
-    await sleep(2000);
-
+  if (currentRep >= totalReps) {
     document.body.style.background = "black";
-
-    await sleep(800);
-
-    runRound();
+    number.textContent = "✔";
+    return;
   }
+
+  currentRep++;
+
+  await countdown(3);
+
+  // small random delay before signal (keeps players honest)
+  await sleep(500 + Math.random() * 1500);
+
+  const isGreen = Math.random() > 0.5;
+
+  // 🔴🟢 SHOW SIGNAL
+  document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
+  number.textContent = "";
+
+  // ⏱ hold signal (reaction phase)
+  await sleep(2000); // adjust: 1500–3000
+
+  // ⚫ RESET PHASE (goalkeeper returns)
+  document.body.style.background = "black";
+
+  // 👇 THIS is the important new part
+  await sleep(2500); // adjust: 2000–4000 depending on drill
+
+  runRound();
+}
 
   async function countdown(n) {
     for (let i = n; i > 0; i--) {
