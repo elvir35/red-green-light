@@ -88,7 +88,8 @@
   <button onclick="toggleFullscreen()">Fullscreen</button>
 </div>
 
-<div class="timer">
+<!-- TIMER -->
+<div class="timer" id="timer">
   <svg width="220" height="220">
     <circle class="bg" cx="110" cy="110" r="95"></circle>
     <circle class="progress" cx="110" cy="110" r="95"
@@ -103,6 +104,7 @@
 <script>
   const number = document.getElementById("number");
   const progress = document.getElementById("progressCircle");
+  const timer = document.getElementById("timer");
 
   const circumference = 2 * Math.PI * 95;
 
@@ -116,19 +118,30 @@
   }
 
   async function runRound() {
+
     if (currentRep >= totalReps) {
       document.body.style.background = "black";
+      timer.style.display = "flex";
       number.textContent = "✔";
       return;
     }
 
     currentRep++;
 
+    // SHOW timer
+    timer.style.display = "flex";
+    document.body.style.background = "black";
+
     await countdown(3);
 
     await sleep(500 + Math.random() * 1500);
 
     const isGreen = Math.random() > 0.5;
+
+    // 🔥 HIDE TIMER COMPLETELY
+    timer.style.display = "none";
+
+    // FULL SCREEN COLOR
     document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
 
     if (navigator.vibrate) navigator.vibrate(200);
@@ -136,6 +149,7 @@
     await sleep(1500 + Math.random() * 1500);
 
     document.body.style.background = "black";
+
     await sleep(800);
 
     runRound();
@@ -146,16 +160,14 @@
 
       number.textContent = i;
 
-      // pulse effect
-      number.classList.add("pulse");
-      setTimeout(() => number.classList.remove("pulse"), 200);
+      // pulse
+      number.style.transform = "translate(-50%, -50%) scale(1.2)";
+      setTimeout(() => {
+        number.style.transform = "translate(-50%, -50%) scale(1)";
+      }, 200);
 
-      // optional sound (uncomment if you want)
-      // new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
-
-      // reset ring instantly
+      // reset ring
       progress.style.transition = "none";
-      progress.style.strokeDasharray = circumference;
       progress.style.strokeDashoffset = 0;
 
       await sleep(50);
