@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Red Green Light Trainer</title>
+  <title>Red Green Light</title>
 
   <style>
     body {
@@ -14,68 +14,18 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      overflow: hidden;
     }
 
     #controls {
       position: absolute;
       top: 20px;
       left: 20px;
-      z-index: 2;
-    }
-
-    input {
-      width: 60px;
-      padding: 6px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 8px 12px;
-      font-size: 16px;
-      margin-left: 5px;
-      cursor: pointer;
-    }
-
-    .timer {
-      position: relative;
-      width: 220px;
-      height: 220px;
-    }
-
-    svg {
-      transform: rotate(-90deg);
-    }
-
-    circle {
-      fill: none;
-      stroke-width: 14;
-    }
-
-    .bg {
-      stroke: rgba(255,255,255,0.15);
-    }
-
-    .progress {
-      stroke: white;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 1s linear;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,0.7));
     }
 
     #number {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(1);
-      font-size: 90px;
+      font-size: 140px;
       font-weight: bold;
-      text-shadow: 0 0 25px rgba(255,255,255,0.9);
-      transition: transform 0.2s ease;
-    }
-
-    .pulse {
-      transform: translate(-50%, -50%) scale(1.2);
+      text-shadow: 0 0 30px rgba(255,255,255,0.9);
     }
   </style>
 </head>
@@ -85,28 +35,12 @@
 <div id="controls">
   Reps: <input id="reps" type="number" value="5" min="1">
   <button onclick="start()">Start</button>
-  <button onclick="toggleFullscreen()">Fullscreen</button>
 </div>
 
-<!-- TIMER -->
-<div class="timer" id="timer">
-  <svg width="220" height="220">
-    <circle class="bg" cx="110" cy="110" r="95"></circle>
-    <circle class="progress" cx="110" cy="110" r="95"
-      stroke-dasharray="597"
-      stroke-dashoffset="0"
-      id="progressCircle">
-    </circle>
-  </svg>
-  <div id="number">3</div>
-</div>
+<div id="number">▶</div>
 
 <script>
   const number = document.getElementById("number");
-  const progress = document.getElementById("progressCircle");
-  const timer = document.getElementById("timer");
-
-  const circumference = 2 * Math.PI * 95;
 
   let totalReps = 5;
   let currentRep = 0;
@@ -121,16 +55,11 @@
 
     if (currentRep >= totalReps) {
       document.body.style.background = "black";
-      timer.style.display = "flex";
       number.textContent = "✔";
       return;
     }
 
     currentRep++;
-
-    // SHOW timer
-    timer.style.display = "flex";
-    document.body.style.background = "black";
 
     await countdown(3);
 
@@ -138,15 +67,12 @@
 
     const isGreen = Math.random() > 0.5;
 
-    // 🔥 HIDE TIMER COMPLETELY
-    timer.style.display = "none";
-
-    // FULL SCREEN COLOR
+    // 🔥 THIS is the key: full screen color
     document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
 
-    if (navigator.vibrate) navigator.vibrate(200);
+    number.textContent = "";
 
-    await sleep(1500 + Math.random() * 1500);
+    await sleep(2000);
 
     document.body.style.background = "black";
 
@@ -157,39 +83,14 @@
 
   async function countdown(n) {
     for (let i = n; i > 0; i--) {
-
+      document.body.style.background = "black";
       number.textContent = i;
-
-      // pulse
-      number.style.transform = "translate(-50%, -50%) scale(1.2)";
-      setTimeout(() => {
-        number.style.transform = "translate(-50%, -50%) scale(1)";
-      }, 200);
-
-      // reset ring
-      progress.style.transition = "none";
-      progress.style.strokeDashoffset = 0;
-
-      await sleep(50);
-
-      // animate ring
-      progress.style.transition = "stroke-dashoffset 1s linear";
-      progress.style.strokeDashoffset = circumference;
-
       await sleep(1000);
     }
   }
 
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
   }
 </script>
 
