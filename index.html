@@ -87,13 +87,13 @@
   number.textContent = "";
 
   // ⏱ hold signal (reaction phase)
-  await sleep(2000); // adjust: 1500–3000
+  await sleep(1000); // adjust: 1500–3000
 
   // ⚫ RESET PHASE (goalkeeper returns)
   document.body.style.background = "black";
 
   // 👇 THIS is the important new part
-  await sleep(2500); // adjust: 2000–4000 depending on drill
+  await sleep(3000); // adjust: 2000–4000 depending on drill
 
   runRound();
 }
