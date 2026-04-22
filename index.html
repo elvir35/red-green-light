@@ -49,11 +49,11 @@
       stroke-width: 18;
     }
 
+    /* ✅ FIXED: removed drop-shadow */
     .progress {
       stroke: white;
       stroke-width: 18;
       stroke-linecap: round;
-      filter: drop-shadow(0 0 20px rgba(255,255,255,0.9));
     }
 
     #time {
@@ -63,7 +63,7 @@
       transform: translate(-50%, -50%);
       font-size: 80px;
       font-weight: bold;
-      text-shadow: 0 0 25px rgba(255,255,255,1);
+      text-shadow: 0 0 25px rgba(255,255,255,0.9);
     }
   </style>
 </head>
@@ -109,7 +109,7 @@
 
     if (currentRep >= totalReps) {
       document.body.style.background = "black";
-      timer.style.display = "flex";
+      timer.style.display = "block";
       timeEl.textContent = "✔";
       return;
     }
@@ -120,9 +120,8 @@
     timer.style.display = "block";
     document.body.style.background = "black";
 
-    await countdown(3000); // 3 seconds
+    await countdown(3000);
 
-    // random delay before signal
     await sleep(500 + Math.random() * 1500);
 
     const isGreen = Math.random() > 0.5;
@@ -133,7 +132,6 @@
 
     if (navigator.vibrate) navigator.vibrate(200);
 
-    // reaction time
     await sleep(1000);
 
     // RESET
@@ -154,7 +152,7 @@
         const elapsed = timestamp - startTime;
         const remaining = Math.max(duration - elapsed, 0);
 
-        // aggressive easing (faster feel)
+        // aggressive easing
         const progressPercent = Math.pow(elapsed / duration, 1.4);
 
         // update number
