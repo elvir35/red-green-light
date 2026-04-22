@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Advanced Countdown</title>
+  <title>Red Green Light</title>
 
   <style>
     body {
@@ -14,12 +14,26 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      overflow: hidden;
+    }
+
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    button, input {
+      padding: 8px;
+      font-size: 16px;
+      margin-left: 5px;
     }
 
     .timer {
       position: relative;
-      width: 260px;
-      height: 260px;
+      width: 320px;
+      height: 320px;
     }
 
     svg {
@@ -28,17 +42,18 @@
 
     circle {
       fill: none;
-      stroke-width: 12;
     }
 
     .bg {
-      stroke: rgba(255,255,255,0.15);
+      stroke: rgba(255,255,255,0.1);
+      stroke-width: 18;
     }
 
     .progress {
       stroke: white;
+      stroke-width: 18;
       stroke-linecap: round;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,0.7));
+      filter: drop-shadow(0 0 20px rgba(255,255,255,0.9));
     }
 
     #time {
@@ -46,31 +61,26 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 60px;
+      font-size: 80px;
       font-weight: bold;
-      text-shadow: 0 0 20px rgba(255,255,255,0.9);
-    }
-
-    button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      padding: 8px 12px;
-      font-size: 16px;
-      cursor: pointer;
+      text-shadow: 0 0 25px rgba(255,255,255,1);
     }
   </style>
 </head>
 
 <body>
 
-<button onclick="start()">Start</button>
+<div id="controls">
+  Reps: <input id="reps" type="number" value="5" min="1">
+  <button onclick="start()">Start</button>
+  <button onclick="toggleFullscreen()">Fullscreen</button>
+</div>
 
-<div class="timer">
-  <svg width="260" height="260">
-    <circle class="bg" cx="130" cy="130" r="110"></circle>
-    <circle class="progress" cx="130" cy="130" r="110"
-      stroke-dasharray="691"
+<div class="timer" id="timer">
+  <svg width="320" height="320">
+    <circle class="bg" cx="160" cy="160" r="140"></circle>
+    <circle class="progress" cx="160" cy="160" r="140"
+      stroke-dasharray="879"
       stroke-dashoffset="0"
       id="progressCircle">
     </circle>
@@ -81,41 +91,101 @@
 <script>
   const timeEl = document.getElementById("time");
   const progress = document.getElementById("progressCircle");
+  const timer = document.getElementById("timer");
 
-  const radius = 110;
+  const radius = 140;
   const circumference = 2 * Math.PI * radius;
 
-  let duration = 3000; // ms (3 seconds)
+  let totalReps = 5;
+  let currentRep = 0;
 
-  function start() {
-    let startTime = null;
+  async function start() {
+    totalReps = parseInt(document.getElementById("reps").value) || 5;
+    currentRep = 0;
+    runRound();
+  }
 
-    function animate(timestamp) {
-      if (!startTime) startTime = timestamp;
+  async function runRound() {
 
-      const elapsed = timestamp - startTime;
-      const remaining = Math.max(duration - elapsed, 0);
-
-      // update number (with 1 decimal)
-      timeEl.textContent = (remaining / 1000).toFixed(1);
-
-      // update ring
-      const progressPercent = elapsed / duration;
-      const offset = circumference * progressPercent;
-      progress.style.strokeDashoffset = offset;
-
-      if (remaining > 0) {
-        requestAnimationFrame(animate);
-      } else {
-        timeEl.textContent = "0.0";
-      }
+    if (currentRep >= totalReps) {
+      document.body.style.background = "black";
+      timer.style.display = "flex";
+      timeEl.textContent = "✔";
+      return;
     }
 
-    // reset ring
-    progress.style.strokeDasharray = circumference;
-    progress.style.strokeDashoffset = 0;
+    currentRep++;
 
-    requestAnimationFrame(animate);
+    // SHOW TIMER
+    timer.style.display = "block";
+    document.body.style.background = "black";
+
+    await countdown(3000); // 3 seconds
+
+    // random delay before signal
+    await sleep(500 + Math.random() * 1500);
+
+    const isGreen = Math.random() > 0.5;
+
+    // HIDE TIMER → FULL SCREEN COLOR
+    timer.style.display = "none";
+    document.body.style.background = isGreen ? "#00ff00" : "#ff0000";
+
+    if (navigator.vibrate) navigator.vibrate(200);
+
+    // reaction time
+    await sleep(1000);
+
+    // RESET
+    document.body.style.background = "black";
+    await sleep(4000);
+
+    runRound();
+  }
+
+  function countdown(duration) {
+    return new Promise(resolve => {
+
+      let startTime = null;
+
+      function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+
+        const elapsed = timestamp - startTime;
+        const remaining = Math.max(duration - elapsed, 0);
+
+        // aggressive easing (faster feel)
+        const progressPercent = Math.pow(elapsed / duration, 1.4);
+
+        // update number
+        timeEl.textContent = (remaining / 1000).toFixed(1);
+
+        // update ring
+        progress.style.strokeDasharray = circumference;
+        progress.style.strokeDashoffset = circumference * progressPercent;
+
+        if (remaining > 0) {
+          requestAnimationFrame(animate);
+        } else {
+          timeEl.textContent = "0.0";
+          resolve();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    });
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
   }
 </script>
 
