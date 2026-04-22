@@ -102,7 +102,27 @@
   let totalReps = 5;
   let currentRep = 0;
 
+  // 🔒 Wake Lock
+  let wakeLock = null;
+
+  async function enableWakeLock() {
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+
+      document.addEventListener("visibilitychange", async () => {
+        if (wakeLock !== null && document.visibilityState === "visible") {
+          wakeLock = await navigator.wakeLock.request("screen");
+        }
+      });
+
+    } catch (err) {
+      console.log("Wake lock failed:", err);
+    }
+  }
+
   async function start() {
+    await enableWakeLock();
+
     totalReps = parseInt(document.getElementById("reps").value) || 5;
     currentRep = 0;
     runRound();
@@ -122,6 +142,8 @@
     document.body.style.background = "black";
 
     await countdown(3000);
+
+    await sleep(500 + Math.random() * 1500);
 
     const isGreen = Math.random() > 0.5;
 
@@ -154,10 +176,10 @@
 
         const progressPercent = elapsed / duration;
 
-        // update text
+        // number
         timeEl.textContent = (remaining / 1000).toFixed(1);
 
-        // 🎨 color shift
+        // color shift
         if (progressPercent < 0.5) {
           progress.style.stroke = "#00ff00";
         } else if (progressPercent < 0.8) {
@@ -166,26 +188,26 @@
           progress.style.stroke = "#ff0000";
         }
 
-        // 🔊 beep every second
+        // beep every second
         if (seconds !== lastSecond && seconds > 0) {
           lastSecond = seconds;
-          playBeep(1200, 0.12); // higher + louder
+          playBeep(1200, 0.12);
         }
 
-        // 💥 pulse last 0.3s
+        // pulse last 0.3s
         if (remaining < 300) {
           timeEl.classList.add("pulse");
         } else {
           timeEl.classList.remove("pulse");
         }
 
-        // 🔔 final beep
+        // final beep
         if (!endBeepPlayed && remaining <= 50) {
           endBeepPlayed = true;
-          playBeep(600, 0.35); // deeper + longer
+          playBeep(600, 0.35);
         }
 
-        // ring animation
+        // ring
         progress.style.strokeDasharray = circumference;
         progress.style.strokeDashoffset = circumference * progressPercent;
 
